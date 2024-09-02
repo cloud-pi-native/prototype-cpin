@@ -1,5 +1,6 @@
 environment: ovh
 keycloak:
+  enabled: true
   global:
     compatibility:
       openshift:
@@ -15,8 +16,8 @@ keycloak:
       infinispan: 7800
   ingress:
       apiVersion: ''
-      enabled: false
-      hostname: keycloak-cncs1.d270.dev.forge.minint.fr
+      enabled: true
+      hostname: apim-canel-keycloak.apps.app1.numerique-interieur.com
       ingressClassName: ''
       path: /
       pathType: Prefix
