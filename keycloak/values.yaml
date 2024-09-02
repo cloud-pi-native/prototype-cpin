@@ -1,3 +1,4 @@
+environment: ovh
 keycloak:
   global:
     compatibility:
@@ -36,17 +37,15 @@ keycloak:
   podSecurityContext:
     enabled: false
     fsGroup: null
+  externalDatabase:
+    existingSecret: "mi-apimcanel-dev-postgres-infra-6293-cluster-app"
+    existingSecretHostKey: "host"
+    existingSecretPortKey: "port"
+    existingSecretUserKey: "username"
+    existingSecretDatabaseKey: "dbname"
+    existingSecretPasswordKey: "password"
   postgresql:
-    enabled: true
-    auth:
-      postgresPassword: ""
-      username: bn_keycloak
-      password: ""
-      database: bitnami_keycloak
-      existingSecret: ""
-      secretKeys:
-        userPasswordKey: password
-    architecture: standalone    
+    enabled: false  
   production: false
   proxy: edge
   readinessProbe:
