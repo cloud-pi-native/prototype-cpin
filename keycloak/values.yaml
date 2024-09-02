@@ -14,6 +14,13 @@ keycloak:
       http: 8080
       https: 8443
       infinispan: 7800
+  resources:
+    requests:
+      cpu: 500m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 1024Mi
   ingress:
       apiVersion: ''
       enabled: true
@@ -49,13 +56,6 @@ keycloak:
     enabled: false  
   production: false
   proxy: edge
-  readinessProbe:
-      enabled: true
-      failureThreshold: 3
-      initialDelaySeconds: 90
-      periodSeconds: 90
-      successThreshold: 1
-      timeoutSeconds: 90
   replicaCount: 1
   keycloakConfigCli:
     enabled: true
