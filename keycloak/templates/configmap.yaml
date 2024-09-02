@@ -6,6 +6,7 @@ data:
   realm-config.yaml: |
     realm: $(REALM)
     enabled: true
+    sslRequired: 'none'
     attributes:
       frontendUrl: $(KEYCLOAK_URL)
     clients:
