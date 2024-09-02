@@ -3,6 +3,7 @@ replicaCount: 1
 image:
   repository: harbor.apps.c6.numerique-interieur.com/mi-apimcanel/node-kaamelott
   tag: latest
+  imagePullSecrets: registry-pull-secret
 
 nodeEnv: production
 
