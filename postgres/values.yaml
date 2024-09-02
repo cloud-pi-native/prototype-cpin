@@ -1,7 +1,8 @@
 nameOverride: ""
 fullnameOverride: ""
 
-postgres:
+cluster:
+  enabled: true
   nameOverride: ""
   fullnameOverride: ""
   type: postgresql
