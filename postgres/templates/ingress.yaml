@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    haproxy.org/path-rewrite: "/$2"
+  name: cncs-keycloak
+spec:
+  rules:
+    - host: {{ .Values.keycloak.cds.ingress.hostname }}
+      http:
+        paths:
+          - backend:
+              service:
+                name: cncs-keycloak
+                port:
+                  name: http
+            path: /
+            pathType: ImplementationSpecific            
+  tls:
+    - hosts:
+        - {{ .Values.keycloak.ingress.hostname }}
+        {{- if .Values.keycloak.cdsTls.enabled }}
+        - {{ .Values.keycloak.cds.ingress.hostname }}
+        {{- end }} 
+      secretName: keycloak-ingress-cert            

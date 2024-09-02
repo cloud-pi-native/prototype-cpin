@@ -1,0 +1,19 @@
+replicaCount: 1
+
+image:
+  repository: harbor.apps.c6.numerique-interieur.com/mi-apimcanel/node-kaamelott
+  tag: latest
+
+nodeEnv: production
+
+service:
+  type: ClusterIP
+  port: 80
+
+resources:
+  limits:
+    memory: "256Mi"
+    cpu: "250m"
+  requests:
+    memory: "128Mi"
+    cpu: "125m"

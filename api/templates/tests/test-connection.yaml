@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "canel-apim.fullname" . }}-test-connection"
+  labels:
+    {{- include "canel-apim.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "canel-apim.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never
