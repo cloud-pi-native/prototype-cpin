@@ -215,7 +215,7 @@ krakend:
             "method": "GET",
             "backend": [
               {
-                "host": ["http://mi-apimcanel-dev-kaamelott-infra-6293-api:3000"],
+                "host": ["http://mi-apimcanel-dev-kaamelott-infra-6293-api"],
                 "url_pattern": "/public"
               }
             ]
