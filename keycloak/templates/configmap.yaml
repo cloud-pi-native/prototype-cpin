@@ -39,6 +39,20 @@ data:
         display.on.consent.screen: 'false'
         oauth2.device.authorization.grant.enabled: 'false'
         backchannel.logout.revoke.offline.tokens: 'false'
+    roles:
+      realm:
+        - name: "admin"
+          description: "Administrator role with full permissions"
+          composite: false
+          clientRole: false
+        - name: "user"
+          description: "User role with basic permissions"
+          composite: false
+          clientRole: false
+        - name: "moderator"
+          description: "Moderator role with limited permissions"
+          composite: false
+          clientRole: false
     users:
       - username: admin
         enabled: true
