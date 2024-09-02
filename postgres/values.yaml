@@ -1,105 +1,54 @@
-keycloak:
-  global:
-    compatibility:
-      openshift:
-        adaptSecurityContext: auto
-  auth:
-    adminUser: admin
-    adminPassword: "admin"
-  cache:
-      enabled: false
-  containerPorts:
-      http: 8080
-      https: 8443
-      infinispan: 7800
-  ingress:
-      apiVersion: ''
-      enabled: false
-      hostname: keycloak-cncs1.d270.dev.forge.minint.fr
-      ingressClassName: ''
-      path: /
-      pathType: Prefix
-      annotations: 
-      selfSigned: false
-      servicePort: http
-      tls: false
-  livenessProbe:
-    enabled: true
-    failureThreshold: 3
-    initialDelaySeconds: 900
-    periodSeconds: 90
-    successThreshold: 1
-    timeoutSeconds: 90
-  logging:
-    level: INFO
-    output: default
-  podSecurityContext:
-    enabled: false
-    fsGroup: null
-  postgresql:
-    enabled: true
-    auth:
-      postgresPassword: ""
-      username: bn_keycloak
-      password: ""
-      database: bitnami_keycloak
-      existingSecret: ""
-      secretKeys:
-        userPasswordKey: password
-    architecture: standalone    
-  production: false
-  proxy: edge
-  readinessProbe:
+nameOverride: ""
+fullnameOverride: ""
+
+postgres:
+  nameOverride: ""
+  fullnameOverride: ""
+  type: postgresql
+  mode: standalone
+
+  cluster:
+    instances: 1
+    imagePullPolicy: IfNotPresent
+    imagePullSecrets: []
+
+    storage:
+      size: 2Gi
+      storageClass: ""
+
+    walStorage:
+      size: 1Gi
+      storageClass: ""
+    postgresUID: 26
+    postgresGID: 26
+    resources: 
+      limits:
+        cpu: 500m
+        memory: 1Gi
+      requests:
+        cpu: 250m
+        memory: 512Mi
+
+    monitoring:
       enabled: true
-      failureThreshold: 3
-      initialDelaySeconds: 90
-      periodSeconds: 90
-      successThreshold: 1
-      timeoutSeconds: 90
-  replicaCount: 1
-  keycloakConfigCli:
-    enabled: true
-    command:
-    - java
-    - -jar
-    - /opt/bitnami/keycloak-config-cli/keycloak-config-cli-23.0.7.jar
-    image:
-      registry: docker.io
-      repository: bitnami/keycloak-config-cli
-      tag: 5.11.1-debian-12-r0
-      digest: ""
-      pullPolicy: IfNotPresent
-    annotations:
-      helm.sh/hook: "post-install,post-upgrade,post-rollback"
-      helm.sh/hook-delete-policy: "hook-succeeded,before-hook-creation"
-      helm.sh/hook-weight: "5"
-    ## @param keycloakConfigCli.command Command for running the container (set to default if not set). Use array form
-    ##
-    resources: {}
-    ## @param keycloakConfigCli.extraEnvVars Additional environment variables to set
-    ## Example:
-    ## extraEnvVars:
-    ##   - name: FOO
-    ##     value: "bar"
-    ##
-    ## @param keycloakConfigCli.nodeSelector Node labels for pod assignment
-    ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
-    ##
-    nodeSelector: {}
-    extraEnvVars:
-      - name: IMPORT_VARSUBSTITUTION_ENABLED
-        value: "true"
-      - name: CLIENTSECRET
-        value: "PouetPouet1!"
-      - name: CLIENTID
-        value: krakend-client
-      - name: REALM
-        value: cncs
-    existingConfigmap: "keycloak-realm-config"
-    cleanupAfterFinished:
-      enabled: false
-      seconds: 600
-  networkPolicy:
-    ## @param networkPolicy.enabled Specifies whether a NetworkPolicy should be created
-    ##
+      podMonitor:
+        enabled: true
+      prometheusRule:
+        enabled: true
+        excludeRules: []
+
+    initdb: 
+      database: keycloak
+      owner: "keycloak" # Defaults to the database name
+      secret:
+        name: "" # Name of the secret containing the initial credentials for the owner of the user database. If empty a new secret will be created from scratch
+      options: []
+      encoding: UTF8
+
+  backups:
+    # -- You need to configure backups manually, so backups are disabled by default.
+    enabled: false
+
+  pooler:
+    # -- Whether to enable PgBouncer
     enabled: false

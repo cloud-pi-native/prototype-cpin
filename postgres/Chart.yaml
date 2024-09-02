@@ -24,7 +24,7 @@ version: 0.1.0
 appVersion: "1.16.0"
 
 dependencies:
-- name: keycloak
-  version: "19.4.1"
-  repository: "https://charts.bitnami.com/bitnami"
-  condition: keycloak.enabled
+- name: postgres
+  version: "0.0.10"
+  repository: "https://cloudnative-pg.github.io/charts"
+  condition: postgres.enabled
