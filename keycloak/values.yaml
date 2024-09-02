@@ -75,7 +75,13 @@ keycloak:
       helm.sh/hook-weight: "5"
     ## @param keycloakConfigCli.command Command for running the container (set to default if not set). Use array form
     ##
-    resources: {}
+    resources:
+      requests:
+        cpu: 250m
+        memory: 206Mi
+      limits:
+        cpu: 1000m
+        memory: 512Mi    
     ## @param keycloakConfigCli.extraEnvVars Additional environment variables to set
     ## Example:
     ## extraEnvVars:
