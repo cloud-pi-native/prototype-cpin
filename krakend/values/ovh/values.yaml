@@ -75,7 +75,7 @@ krakend:
             "method": "GET",
             "backend": [
               {
-                "host": ["http://mi-apimcanel-dev-kaamelott-infra-6293-api:3000"],
+                "host": ["http://mi-apimcanel-dev-kaamelott-infra-6293-api"],
                 "url_pattern": "/quote1"
               }
             ],
@@ -95,7 +95,7 @@ krakend:
             "method": "GET",
             "backend": [
               {
-                "host": ["http://mi-apimcanel-dev-kaamelott-infra-6293-api:3000"],
+                "host": ["http://mi-apimcanel-dev-kaamelott-infra-6293-api"],
                 "url_pattern": "/quote2"
               }
             ],
@@ -115,7 +115,7 @@ krakend:
             "method": "GET",
             "backend": [
               {
-                "host": ["http://mi-apimcanel-dev-kaamelott-infra-6293-api:3000"],
+                "host": ["http://mi-apimcanel-dev-kaamelott-infra-6293-api"],
                 "url_pattern": "/quote3"
               }
             ],
@@ -135,7 +135,7 @@ krakend:
             "method": "PUT",
             "backend": [
               {
-                "host": ["http://mi-apimcanel-dev-kaamelott-infra-6293-api:3000"],
+                "host": ["http://mi-apimcanel-dev-kaamelott-infra-6293-api"],
                 "url_pattern": "/quote4"
               }
             ],
@@ -155,7 +155,7 @@ krakend:
             "method": "PUT",
             "backend": [
               {
-                "host": ["http://mi-apimcanel-dev-kaamelott-infra-6293-api:3000"],
+                "host": ["http://mi-apimcanel-dev-kaamelott-infra-6293-api"],
                 "url_pattern": "/quote5"
               }
             ],
@@ -175,7 +175,7 @@ krakend:
             "method": "POST",
             "backend": [
               {
-                "host": ["http://mi-apimcanel-dev-kaamelott-infra-6293-api:3000"],
+                "host": ["http://mi-apimcanel-dev-kaamelott-infra-6293-api"],
                 "url_pattern": "/quote6"
               }
             ],
@@ -195,7 +195,7 @@ krakend:
             "method": "POST",
             "backend": [
               {
-                "host": ["http://mi-apimcanel-dev-kaamelott-infra-6293-api:3000"],
+                "host": ["http://mi-apimcanel-dev-kaamelott-infra-6293-api"],
                 "url_pattern": "/quote7"
               }
             ],
