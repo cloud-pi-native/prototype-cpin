@@ -100,7 +100,7 @@ keycloak:
       - name: CLIENTID
         value: krakend-client
       - name: REALM
-        value: cncs
+        value: krakend-realm
     existingConfigmap: "keycloak-realm-config"
     cleanupAfterFinished:
       enabled: false
