@@ -55,6 +55,7 @@ krakend:
         "Content-Type",
         "ClientId"
       ]
+    
     rate_limit_backend.tmpl: |-
       "qos/ratelimit/proxy": {
         "max_rate": 0.5,
