@@ -175,7 +175,7 @@ krakend:
             "method": "PUT",
             "backend": [
               {
-                "host": ["http://{{ $host }}"],
+                "host": ["{{ $host }}"],
                 "url_pattern": "/quote4"
               }
             ],
@@ -189,7 +189,7 @@ krakend:
             "method": "PUT",
             "backend": [
               {
-                "host": ["http://{{ $host }}"],
+                "host": ["{{ $host }}"],
                 "url_pattern": "/quote5"
               }
             ],
@@ -203,7 +203,7 @@ krakend:
             "method": "POST",
             "backend": [
               {
-                "host": ["http://{{ $host }}"],
+                "host": ["{{ $host }}"],
                 "url_pattern": "/quote6"
               }
             ],
@@ -217,7 +217,7 @@ krakend:
             "method": "POST",
             "backend": [
               {
-                "host": ["http://{{ $host }}"],
+                "host": ["{{ $host }}"],
                 "url_pattern": "/quote7"
               }
             ],
