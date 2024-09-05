@@ -175,7 +175,7 @@ krakend:
             "method": "PUT",
             "backend": [
               {
-                "host": ["http://api:3000"],
+                "host": ["http://{{ $host }}"],
                 "url_pattern": "/quote4"
               }
             ],
@@ -189,12 +189,13 @@ krakend:
             "method": "PUT",
             "backend": [
               {
-                "host": ["http://api:3000"],
+                "host": ["http://{{ $host }}"],
                 "url_pattern": "/quote5"
               }
             ],
           "extra_config": {
-            "auth/validator": {{ template "auth_validator" (dict "JWKUrl" $JWKUrl "Roles" "[\"admin\", \"moderator\"]") }}
+            "auth/validator": {{ template "auth_validator" (dict "JWKUrl" $JWKUrl "Roles" "[\"admin\", \"moderator\"]") }},
+            "lua_prescript": {{ template "lua_prescript" . }}
           }
           },
           {
@@ -202,7 +203,7 @@ krakend:
             "method": "POST",
             "backend": [
               {
-                "host": ["http://api:3000"],
+                "host": ["http://{{ $host }}"],
                 "url_pattern": "/quote6"
               }
             ],
@@ -216,7 +217,7 @@ krakend:
             "method": "POST",
             "backend": [
               {
-                "host": ["http://api:3000"],
+                "host": ["http://{{ $host }}"],
                 "url_pattern": "/quote7"
               }
             ],
