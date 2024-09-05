@@ -76,159 +76,171 @@ krakend:
   # Note that you'd need to set a custom configuration file
   # to use them.
   templates:
-    telemetry.tmpl: |-
-      "extra_config": {
-        "telemetry/opentelemetry": {
-          "service_name": "krakend_prometheus_service",
-          "metric_reporting_period": 1,
-          "exporters": {
-            "prometheus": [
-              {
-                "name": "local_prometheus",
-                "port": 9090,
-                "process_metrics": true,
-                "go_metrics": true
-              }
-            ]
+    endpoints.tmpl: |-
+      {
+        "endpoint": "/api/quote1",
+        "method": "GET",
+        "backend": [
+          {
+            "host": ["http://mi-apimcanel-dev-kaamelott-infra-6293-api"],
+            "url_pattern": "/quote1"
+          }
+        ],
+        "extra_config": {
+          "auth/validator": {
+            "alg": "RS256",
+            "jwk_url": "http://mi-apimcanel-dev-keycloak-6293-headless/realms/krakend-realm/protocol/openid-connect/certs",
+            "disable_jwk_security": true,
+            "roles": ["admin", "moderator", "user"],
+            "roles_key": "realm_access.roles",
+            "roles_key_is_nested": true
           }
         }
-      }
-    endpoints.tmpl: |-
-      {{ define "auth_validator" }}
+      },
       {
-        "alg": "RS256",
-        "jwk_url": "{{ .JWKUrl }}",
-        "disable_jwk_security": true,
-        "roles": {{ .Roles }},
-        "roles_key": "realm_access.roles",
-        "roles_key_is_nested": true,
-          "propagate_claims": [
-          ["preferred_username", "x-user"],
-          ["realm_access.role", "x-role"]
+        "endpoint": "/api/quote2",
+        "method": "GET",
+        "backend": [
+          {
+            "host": ["http://mi-apimcanel-dev-kaamelott-infra-6293-api"],
+            "url_pattern": "/quote2"
+          }
+        ],
+        "extra_config": {
+          "auth/validator": {
+            "alg": "RS256",
+            "jwk_url": "http://mi-apimcanel-dev-keycloak-6293-headless/realms/krakend-realm/protocol/openid-connect/certs",
+            "disable_jwk_security": true,
+            "roles": ["admin", "moderator", "user"],
+            "roles_key": "realm_access.roles",
+            "roles_key_is_nested": true
+          }
+        }
+      },
+      {
+        "endpoint": "/api/quote3",
+        "method": "GET",
+        "backend": [
+          {
+            "host": ["http://mi-apimcanel-dev-kaamelott-infra-6293-api"],
+            "url_pattern": "/quote3"
+          }
+        ],
+        "extra_config": {
+          "auth/validator": {
+            "alg": "RS256",
+            "jwk_url": "http://mi-apimcanel-dev-keycloak-6293-headless/realms/krakend-realm/protocol/openid-connect/certs",
+            "disable_jwk_security": true,
+            "roles": ["admin", "moderator", "user"],
+            "roles_key": "realm_access.roles",
+            "roles_key_is_nested": true
+          }
+        }
+      },
+      {
+        "endpoint": "/api/quote4",
+        "method": "PUT",
+        "backend": [
+          {
+            "host": ["http://mi-apimcanel-dev-kaamelott-infra-6293-api"],
+            "url_pattern": "/quote4"
+          }
+        ],
+        "extra_config": {
+          "auth/validator": {
+            "alg": "RS256",
+            "jwk_url": "http://mi-apimcanel-dev-keycloak-6293-headless/realms/krakend-realm/protocol/openid-connect/certs",
+            "disable_jwk_security": true,
+            "roles": ["admin", "moderator"],
+            "roles_key": "realm_access.roles",
+            "roles_key_is_nested": true
+          }
+        }
+      },
+      {
+        "endpoint": "/api/quote5",
+        "method": "PUT",
+        "backend": [
+          {
+            "host": ["http://mi-apimcanel-dev-kaamelott-infra-6293-api"],
+            "url_pattern": "/quote5"
+          }
+        ],
+        "extra_config": {
+          "auth/validator": {
+            "alg": "RS256",
+            "jwk_url": "http://mi-apimcanel-dev-keycloak-6293-headless/realms/krakend-realm/protocol/openid-connect/certs",
+            "disable_jwk_security": true,
+            "roles": ["admin", "moderator"],
+            "roles_key": "realm_access.roles",
+            "roles_key_is_nested": true
+          }
+        }
+      },
+      {
+        "endpoint": "/api/quote6",
+        "method": "POST",
+        "backend": [
+          {
+            "host": ["http://mi-apimcanel-dev-kaamelott-infra-6293-api"],
+            "url_pattern": "/quote6"
+          }
+        ],
+        "extra_config": {
+          "auth/validator": {
+            "alg": "RS256",
+            "jwk_url": "http://mi-apimcanel-dev-keycloak-6293-headless/realms/krakend-realm/protocol/openid-connect/certs",
+            "disable_jwk_security": true,
+            "roles": ["admin"],
+            "roles_key": "realm_access.roles",
+            "roles_key_is_nested": true
+          }
+        }
+      },
+      {
+        "endpoint": "/api/quote7",
+        "method": "POST",
+        "backend": [
+          {
+            "host": ["http://mi-apimcanel-dev-kaamelott-infra-6293-api"],
+            "url_pattern": "/quote7"
+          }
+        ],
+        "input_headers": [
+          "X-User",
+          "Authorization"
+        ],
+        "extra_config": {
+          "auth/validator": {
+            "alg": "RS256",
+            "jwk_url": "http://mi-apimcanel-dev-keycloak-6293-headless/realms/krakend-realm/protocol/openid-connect/certs",
+            "disable_jwk_security": true,
+            "roles": ["admin"],
+            "roles_key": "realm_access.roles",
+            "roles_key_is_nested": true,
+            "propagate_claims": [
+              ["preferred_username", "x-user"],
+              ["realm_access.role", "x-role"]
+            ]
+          },
+          "modifier/lua-proxy": {
+            "pre": "local r = request.load();print('[GATEWAY] Request from username: ' .. r:headers('X-User') .. ' with path: ' .. r:path() .. ' and method: ' .. r:method())",
+            "live": false,
+            "allow_open_libs": true,
+            "skip_next": false
+        }
+        }
+      },
+      {
+        "endpoint": "/api/public",
+        "method": "GET",
+        "backend": [
+          {
+            "host": ["http://mi-apimcanel-dev-kaamelott-infra-6293-api"],
+            "url_pattern": "/public"
+          }
         ]
       }
-      {{ end }}
-      {{ define "lua_prescript" }}
-      {
-        "pre": "local r = request.load();print('[GATEWAY] Request from username: ' .. r:headers('X-User') .. ' with path: ' .. r:path() .. ' and method: ' .. r:method())",
-        "live": false,
-        "allow_open_libs": true,
-        "skip_next": false
-      }
-      {{ end }}
-      {{$host := .APIHost}}
-      {{$JWKUrl := .JWKUrl}}
-        {
-          "endpoint": "/api/quote1",
-          "method": "GET",
-          "backend": [
-            {
-              "host": ["{{ $host }}"],
-              "url_pattern": "/quote1"
-            }
-          ],
-          "extra_config": {
-            "auth/validator": {{ template "auth_validator" (dict "JWKUrl" $JWKUrl "Roles" "[\"admin\", \"moderator\", \"user\"]") }},
-            "lua_prescript": {{ template "lua_prescript" . }}
-          }
-        },
-        {
-          "endpoint": "/api/quote2",
-          "method": "GET",
-          "backend": [
-            {
-              "host": ["{{ $host }}"],
-              "url_pattern": "/quote2"
-            }
-          ],
-          "extra_config": {
-            "auth/validator": {{ template "auth_validator" (dict "JWKUrl" $JWKUrl "Roles" "[\"admin\", \"moderator\", \"user\"]") }},
-            "lua_prescript": {{ template "lua_prescript" . }}
-          }
-        },
-        {
-          "endpoint": "/api/quote3",
-          "method": "GET",
-          "backend": [
-            {
-              "host": ["{{ $host }}"],
-              "url_pattern": "/quote3"
-            }
-          ],
-          "extra_config": {
-            "auth/validator": {{ template "auth_validator" (dict "JWKUrl" $JWKUrl "Roles" "[\"admin\", \"moderator\", \"user\"]") }},
-            "lua_prescript": {{ template "lua_prescript" . }}
-          }
-        },
-        {
-          "endpoint": "/api/public",
-          "method": "GET",
-          "backend": [
-            {
-              "host": ["{{ $host }}"],
-              "url_pattern": "/public"
-            }
-          ]
-        },
-        {
-            "endpoint": "/api/quote4",
-            "method": "PUT",
-            "backend": [
-              {
-                "host": ["http://api:3000"],
-                "url_pattern": "/quote4"
-              }
-            ],
-          "extra_config": {
-            "auth/validator": {{ template "auth_validator" (dict "JWKUrl" $JWKUrl "Roles" "[\"admin\", \"moderator\"]") }},
-            "lua_prescript": {{ template "lua_prescript" . }}
-          }
-          },
-          {
-            "endpoint": "/api/quote5",
-            "method": "PUT",
-            "backend": [
-              {
-                "host": ["http://api:3000"],
-                "url_pattern": "/quote5"
-              }
-            ],
-          "extra_config": {
-            "auth/validator": {{ template "auth_validator" (dict "JWKUrl" $JWKUrl "Roles" "[\"admin\", \"moderator\"]") }}
-          }
-          },
-          {
-            "endpoint": "/api/quote6",
-            "method": "POST",
-            "backend": [
-              {
-                "host": ["http://api:3000"],
-                "url_pattern": "/quote6"
-              }
-            ],
-          "extra_config": {
-            "auth/validator": {{ template "auth_validator" (dict "JWKUrl" $JWKUrl "Roles" "[\"admin\"]") }},
-            "lua_prescript": {{ template "lua_prescript" . }}
-          }
-          },
-          {
-            "endpoint": "/api/quote7",
-            "method": "POST",
-            "backend": [
-              {
-                "host": ["http://api:3000"],
-                "url_pattern": "/quote7"
-              }
-            ],
-            "input_headers": [
-              "X-User",
-              "Authorization"
-            ],
-          "extra_config": {
-            "auth/validator": {{ template "auth_validator" (dict "JWKUrl" $JWKUrl "Roles" "[\"admin\"]") }},
-            "lua_prescript": {{ template "lua_prescript" . }}
-          }
-          } 
   # -- (object) The service-level "extra_config" settings.
   # This will directly be translated to JSON and is added only
   # if you're not fully overriding the configuration via
