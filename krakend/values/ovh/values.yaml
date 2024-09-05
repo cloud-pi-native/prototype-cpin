@@ -43,10 +43,16 @@ krakend:
   config: |-
     {
       "version": 3,
+      {{ template "telemetry.tmpl" . }},
       "endpoints": [
         {{ template "endpoints.tmpl" .urls }}
       ]
     }
+  # -- (string, optional) an external file relative path, will contain the full
+  # configuration of the krakend service. useful if config file is generated
+  # with flexible config https://www.krakend.io/docs/configuration/flexible-config/
+  configFileSource: ""
+
   # -- (string, optional) an external file relative path, will contain the partial configuration files of the krakend service.
   partialsDirSource: ""
   # -- (string, optional) an external file relative path, will contain the setting configuration files of the krakend service.
@@ -56,13 +62,13 @@ krakend:
   # -- (Object) The default configuration has a partials files that
   # will be used to load several aspects of the configuration.
   # If you want to include expra partials, add or remove them here.
-
+  partials:
   # -- The default configuration has a settings files that
   # will be used to load several aspects of the configuration.
   settings:
     urls.json: |-
       {
-          "APIHost": "http://api:3000",
+          "APIHost": "http://mi-apimcanel-dev-kaamelott-infra-6293-api",
           "JWKUrl": "http://keycloak:8080/realms/krakend-realm/protocol/openid-connect/certs"
       }
   # -- While default configuration does not take into use
@@ -70,6 +76,23 @@ krakend:
   # Note that you'd need to set a custom configuration file
   # to use them.
   templates:
+    telemetry.tmpl: |-
+      "extra_config": {
+        "telemetry/opentelemetry": {
+          "service_name": "krakend_prometheus_service",
+          "metric_reporting_period": 1,
+          "exporters": {
+            "prometheus": [
+              {
+                "name": "local_prometheus",
+                "port": 9090,
+                "process_metrics": true,
+                "go_metrics": true
+              }
+            ]
+          }
+        }
+      }
     endpoints.tmpl: |-
       {{ define "auth_validator" }}
       {
