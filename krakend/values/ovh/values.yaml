@@ -69,7 +69,7 @@ krakend:
     urls.json: |-
       {
           "APIHost": "http://mi-apimcanel-dev-kaamelott-infra-6293-api",
-          "JWKUrl": "http://keycloak:8080/realms/krakend-realm/protocol/openid-connect/certs"
+          "JWKUrl": "http://mi-apimcanel-dev-keycloak-6293-headless/realms/krakend-realm/protocol/openid-connect/certs"
       }
   # -- While default configuration does not take into use
   # templates; you may want to add your own templates here.
