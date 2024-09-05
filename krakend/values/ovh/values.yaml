@@ -63,6 +63,11 @@ krakend:
   # will be used to load several aspects of the configuration.
   # If you want to include expra partials, add or remove them here.
   partials:
+    input_header.txt: |-
+      [
+        "X-User",
+        "Authorization"
+      ]
   # -- The default configuration has a settings files that
   # will be used to load several aspects of the configuration.
   settings:
@@ -127,9 +132,10 @@ krakend:
               "url_pattern": "/quote1"
             }
           ],
+          "input_headers": {{ include "input_header.txt"}},
           "extra_config": {
             "auth/validator": {{ template "auth_validator" (dict "JWKUrl" $JWKUrl "Roles" "[\"admin\", \"moderator\", \"user\"]") }},
-            "lua_prescript": {{ template "lua_prescript" . }}
+            "modifier/lua-proxy": {{ template "lua_prescript" . }}
           }
         },
         {
@@ -141,9 +147,10 @@ krakend:
               "url_pattern": "/quote2"
             }
           ],
+          "input_headers": {{ include "input_header.txt"}},
           "extra_config": {
             "auth/validator": {{ template "auth_validator" (dict "JWKUrl" $JWKUrl "Roles" "[\"admin\", \"moderator\", \"user\"]") }},
-            "lua_prescript": {{ template "lua_prescript" . }}
+            "modifier/lua-proxy": {{ template "lua_prescript" . }}
           }
         },
         {
@@ -155,9 +162,10 @@ krakend:
               "url_pattern": "/quote3"
             }
           ],
+          "input_headers": {{ include "input_header.txt"}},
           "extra_config": {
             "auth/validator": {{ template "auth_validator" (dict "JWKUrl" $JWKUrl "Roles" "[\"admin\", \"moderator\", \"user\"]") }},
-            "lua_prescript": {{ template "lua_prescript" . }}
+            "modifier/lua-proxy": {{ template "lua_prescript" . }}
           }
         },
         {
@@ -179,10 +187,11 @@ krakend:
                 "url_pattern": "/quote4"
               }
             ],
-          "extra_config": {
-            "auth/validator": {{ template "auth_validator" (dict "JWKUrl" $JWKUrl "Roles" "[\"admin\", \"moderator\"]") }},
-            "lua_prescript": {{ template "lua_prescript" . }}
-          }
+            "input_headers": {{ include "input_header.txt"}},
+            "extra_config": {
+              "auth/validator": {{ template "auth_validator" (dict "JWKUrl" $JWKUrl "Roles" "[\"admin\", \"moderator\"]") }},
+              "modifier/lua-proxy": {{ template "lua_prescript" . }}
+            }
           },
           {
             "endpoint": "/api/quote5",
@@ -193,10 +202,11 @@ krakend:
                 "url_pattern": "/quote5"
               }
             ],
-          "extra_config": {
-            "auth/validator": {{ template "auth_validator" (dict "JWKUrl" $JWKUrl "Roles" "[\"admin\", \"moderator\"]") }},
-            "lua_prescript": {{ template "lua_prescript" . }}
-          }
+            "input_headers": {{ include "input_header.txt"}},
+            "extra_config": {
+              "auth/validator": {{ template "auth_validator" (dict "JWKUrl" $JWKUrl "Roles" "[\"admin\", \"moderator\"]") }},
+              "modifier/lua-proxy": {{ template "lua_prescript" . }}
+            }
           },
           {
             "endpoint": "/api/quote6",
@@ -207,10 +217,11 @@ krakend:
                 "url_pattern": "/quote6"
               }
             ],
-          "extra_config": {
-            "auth/validator": {{ template "auth_validator" (dict "JWKUrl" $JWKUrl "Roles" "[\"admin\"]") }},
-            "lua_prescript": {{ template "lua_prescript" . }}
-          }
+            "input_headers": {{ include "input_header.txt"}},
+            "extra_config": {
+              "auth/validator": {{ template "auth_validator" (dict "JWKUrl" $JWKUrl "Roles" "[\"admin\"]") }},
+              "modifier/lua-proxy": {{ template "lua_prescript" . }}
+            }
           },
           {
             "endpoint": "/api/quote7",
@@ -221,13 +232,15 @@ krakend:
                 "url_pattern": "/quote7"
               }
             ],
-            "input_headers": [
-              "X-User",
-              "Authorization"
-            ],
-          "extra_config": {
-            "auth/validator": {{ template "auth_validator" (dict "JWKUrl" $JWKUrl "Roles" "[\"admin\"]") }},
-            "lua_prescript": {{ template "lua_prescript" . }}
+            "input_headers": {{ include "input_header.txt"}},
+            "extra_config": {
+              "auth/validator": {{ template "auth_validator" (dict "JWKUrl" $JWKUrl "Roles" "[\"admin\"]") }},
+              "modifier/lua-proxy": {
+                "pre": "print('[GATEWAY] Request from username: ' .. r:headers('X-User') .. ' with path: ' .. r:path() .. ' and method: ' .. r:method())",
+                "live": false,
+                "allow_open_libs": true,
+                "skip_next": false
+              }
           }
           } 
   # -- (object) The service-level "extra_config" settings.
