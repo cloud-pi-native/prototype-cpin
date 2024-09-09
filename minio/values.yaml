@@ -9,10 +9,10 @@ minio:
     forceNewKeys: false
   ingress:
     enabled: true
-    hostname: minio-prototype.dso.numerique-interieur.com
+    hostname: minio-prototype.apps.app1.numerique-interieur.com
   apiIngress:
-    enabled: false
-    hostname: minio.local
+    enabled: true
+    hostname: minio-prototype-app.apps.app1.numerique-interieur.com
   defaultBuckets: "prototype-minio"
   resources:
     requests:
