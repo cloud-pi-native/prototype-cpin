@@ -7,6 +7,8 @@ minio:
     rootPasswordSecretKey: "password"
     useSecret: true
     forceNewKeys: false
+  networkPolicy:
+    enabled: false
   ingress:
     enabled: true
     hostname: minio-prototype.apps.app1.numerique-interieur.com
