@@ -229,7 +229,10 @@ Le script fonctionne aussi lorsque les .dec.yaml sont dans le .gitignore et ne c
 Pensez à mettre vos fichiers décodés dans votre `.gitignore`
 
 ## Informations annexes
-Les configurations de ressources (ram/cpu) sont données dans ce repo à titre indicatif. Il est **indispensable** d'effectuer des tests de charge de son application avant de la déployer en recette ou en production.
+Les configurations de ressources (ram/cpu) sont données dans ce repo à titre indicatif.\
+Il est **indispensable** d'effectuer des tests de charge de son application avant de la déployer en recette ou en production.
+
+
 ---
 
 ## Sources et Références :
