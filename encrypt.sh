@@ -36,7 +36,7 @@ find . -type f -name "*.dec.yaml" | while read -r file; do
     fi
     
     # Encrypter le fichier avec sops et la clé AGE
-    sops --encrypt --age "$AGE_KEY" "$file" > "$encrypted_file"
+    sops --encrypt --age "$AGE_KEY" -encrypted-suffix Templates "$file" > "$encrypted_file"
     
     if [ $? -eq 0 ]; then
         echo "Fichier encrypté: $encrypted_file"
