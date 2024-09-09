@@ -39,10 +39,10 @@ minio:
   resources:
     requests:
       cpu: 250m
-      memory: 500Mi
+      memory: 1Gi
     limits:
       cpu: 1
-      memory: 1024Mi
+      memory: 2Gi
   provisioning:
     enabled: true
     podSecurityContext:
