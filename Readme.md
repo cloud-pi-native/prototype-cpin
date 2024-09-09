@@ -106,10 +106,118 @@ Le chart Helm de CloudNativePG est une dépendance, et il est utilisé par Keycl
 
 ## Krakend
 Pour l'API Gateway, nous utilisons le chart Helm Krakend [Voir la documentation](https://github.com/equinixmetal-helm/krakend/tree/main/), recommandé par Krakend, bien qu'il ne soit pas officiel.\
+Dans l'exemple de ce repo, nous implémentons 3 rôles (admin, moderator, user) qui ont accès aux endpoints suivants:
+- GET /api/public => endpoint ouvert
+- GET /api/users/1 => USER, MODERATOR, ADMIN
+- GET /api/users/2 => USER, MODERATOR, ADMIN
+- GET /api/users/3 => USER, MODERATOR, ADMIN
+- PUT /api/moderator/1 => ADMIN, MODERATOR
+- PUT /api/moderator/2 => ADMIN, MODERATOR
+- POST /api/admin/1 => ADMIN
+- POST /api/admin/2 => ADMIN
+
+L'implémentation de ces droits ce fais ici: 
+
+```yaml
+# définition de l'API NODE et de keycloak qui sont rappelé dans le endpoints.tmpl
+    settings:
+        urls.json: |-
+        {
+            "APIHost": "http://mi-apimcanel-dev-kaamelott-infra-6293-api",
+            "JWKUrl": "http://mi-apimcanel-dev-keycloak-6293/realms/krakend-realm/protocol/openid-connect/certs"
+        }
+    endpoints.tmpl: |-
+# définition du validateur d'accès aux endpoints
+      {{ define "auth_validator" }}
+      {
+        "alg": "RS256",
+        "jwk_url": "{{ .JWKUrl }}",
+        "disable_jwk_security": true,
+        "roles": {{ .Roles }},
+        "roles_key": "realm_access.roles",
+        "roles_key_is_nested": true,
+          "propagate_claims": [
+          ["preferred_username", "x-user"],
+          ["realm_access.role", "x-role"]
+        ]
+      }
+      {{ end }}
+# script LUA permettant de logger qui appelle un endpoint en décodant le header      
+      {{ define "lua_prescript" }}
+      {
+        "pre": "local r = request.load();print('[GATEWAY] Request from username: ' .. r:headers('X-User') .. ' with path: ' .. r:path() .. ' and method: ' .. r:method())",
+        "live": false,
+        "allow_open_libs": true,
+        "skip_next": false
+      }
+      {{ end }}
+      {{$host := .APIHost}}
+      {{$JWKUrl := .JWKUrl}}
+# définition d'un endpoint avec variable    
+        {
+          "endpoint": "/api/user/{id}",
+          "method": "GET",
+          "backend": [
+            {
+              "host": ["{{ $host }}"],
+              "url_pattern": "/user/{id}"
+            }
+          ],
+          "input_headers": {{ include "input_header.txt"}},
+          "extra_config": {
+            "auth/validator": {{ template "auth_validator" (dict "JWKUrl" $JWKUrl "Roles" "[\"admin\", \"moderator\", \"user\"]") }},
+            "modifier/lua-proxy": {{ template "lua_prescript" . }}
+          }
+        },
+        {
+          "endpoint": "/api/public",
+          "method": "GET",
+          "backend": [
+            {
+              "host": ["{{ $host }}"],
+              "url_pattern": "/public"
+            }
+          ]
+        },
+        {
+            "endpoint": "/api/modo/{id}",
+            "method": "PUT",
+            "backend": [
+              {
+                "host": ["{{ $host }}"],
+                "url_pattern": "/modo/{id}"
+              }
+            ],
+            "input_headers": {{ include "input_header.txt"}},
+            "extra_config": {
+              "auth/validator": {{ template "auth_validator" (dict "JWKUrl" $JWKUrl "Roles" "[\"admin\", \"moderator\"]") }},
+              "modifier/lua-proxy": {{ template "lua_prescript" . }}
+            }
+          },
+          {
+            "endpoint": "/api/admin/{id}",
+            "method": "POST",
+            "backend": [
+              {
+                "host": ["{{ $host }}"],
+                "url_pattern": "/admin/{id}"
+              }
+            ],
+            "input_headers": {{ include "input_header.txt"}},
+            "extra_config": {
+              "auth/validator": {{ template "auth_validator" (dict "JWKUrl" $JWKUrl "Roles" "[\"admin\"]") }},
+              "modifier/lua-proxy": {{ template "lua_prescript" . }}
+            }
+          }
+```
 **Note importante** : \
 Les dépendances ne sont pas utilisées pour Krakend, étant donné que le chart spécifie un `SecurityContext` avec `RunAsUser: 1000`. Actuellement, cette valeur ne peut pas être désactivée en raison de l'attente d'intégration de la [PR #12879](https://github.com/helm/helm/pull/12879/) dans Helm.
 
 La [configuration flexible](https://www.krakend.io/docs/configuration/flexible-config/) de Krakend est utilisée pour implémenter les routes de manière plus efficace et concise.
+
+**Pas de wildcard possible**, les wildcards sont disponible sur la version enterprise.
+
+Ce projet a pour destinatin d'être un poc ou pour un petit projet, pour toute nécessité d'API Management, nous vous conseillons de prendre d'autres solutions.
 
 ## Gestion des secrets
 Afin de gérer les secrets, le script [d'encryption](./encrypt.sh) permet de chiffrer ses SopsSecret avec Sops (cf: [docs](https://cloud-pi-native.fr/guide/secrets-management)).
