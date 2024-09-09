@@ -86,6 +86,8 @@ L'API Node.js expose plusieurs endpoints permettant d'effectuer des requêtes :
 - PUT
 - POST
 
+Cette api est build via la console CPIN.
+
 ## Keycloak
 Keycloak est déployé à l'aide du chart Helm Bitnami Keycloak [Voir la documentation](https://github.com/bitnami/charts/tree/main/bitnami/keycloak).\
 Le chart Helm de Keycloak est une dépendance, et la fonctionnalité keycloak-config-cli est utilisée pour importer un "realm" configuré dans une ConfigMap (répertoire `keycloak/templates/configmap.yaml`). Un exemple d'implémentation se trouve dans le fichier `values` de Keycloak, où les variables d'environnement (provenant de secrets Kubernetes) sont définies.

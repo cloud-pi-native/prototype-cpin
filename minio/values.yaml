@@ -1,0 +1,64 @@
+environment: ovh
+minio:
+  enabled: true
+  auth:
+    existingSecret: "minio-admin"
+    rootUserSecretKey: "user"
+    rootPasswordSecretKey: "password"
+    useSecret: true
+    forceNewKeys: false
+  ingress:
+    enabled: true
+    hostname: minio-prototype.dso.numerique-interieur.com
+  apiIngress:
+    enabled: false
+    hostname: minio.local
+  defaultBuckets: "prototype-minio"
+  resources:
+    requests:
+      cpu: 250m
+      memory: 200Mi
+    limits:
+      cpu: 1
+      memory: 500Mi
+  provisioning:
+    enabled: true
+    resources:
+      requests:
+        cpu: 250m
+        memory: 100Mi
+      limits:
+        cpu: 500m
+        memory: 206Mi
+    policies:
+      - name: custom-bucket-specific-policy
+        statements:
+          - resources:
+              - "arn:aws:s3:::prototype-minio/*"
+            effect: "Allow"
+            actions:
+              - "s3:AbortMultipartUpload"
+              - "s3:DeleteObject"
+              - "s3:GetObject"
+              - "s3:ListMultipartUploadParts"
+              - "s3:PutObject"
+    users:
+      - username: test
+        password: test
+        disabled: false
+        policies:
+          - custom-bucket-specific-policy
+        setPolicies: false
+    usersExistingSecrets: []
+    groups: []
+    buckets: []
+    cleanupAfterFinished:
+      enabled: false
+      seconds: 600
+    networkPolicy:
+      enabled: false
+      allowExternalEgress: false
+    metrics:
+      serviceMonitor:
+        enabled: true
+    

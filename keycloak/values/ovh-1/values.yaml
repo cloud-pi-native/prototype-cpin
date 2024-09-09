@@ -1,0 +1,111 @@
+environment: ovh
+keycloak:
+  enabled: true
+  global:
+    compatibility:
+      openshift:
+        adaptSecurityContext: auto
+  auth:
+    adminUser: admin
+    adminPassword: "admin"
+  cache:
+      enabled: false
+  containerPorts:
+      http: 8080
+      https: 8443
+      infinispan: 7800
+  resources:
+    requests:
+      cpu: 500m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 1024Mi
+  ingress:
+      apiVersion: ''
+      enabled: true
+      hostname: apim-canel-keycloak.apps.app1.numerique-interieur.com
+      ingressClassName: ''
+      path: /
+      pathType: Prefix
+      annotations: 
+      selfSigned: false
+      servicePort: http
+      tls: false
+  livenessProbe:
+    enabled: true
+    failureThreshold: 3
+    initialDelaySeconds: 900
+    periodSeconds: 90
+    successThreshold: 1
+    timeoutSeconds: 90
+  logging:
+    level: INFO
+    output: default
+  podSecurityContext:
+    enabled: false
+    fsGroup: null
+  externalDatabase:
+    existingSecret: "mi-apimcanel-dev-postgres-infra-6293-cluster-app"
+    existingSecretHostKey: "host"
+    existingSecretPortKey: "port"
+    existingSecretUserKey: "username"
+    existingSecretDatabaseKey: "dbname"
+    existingSecretPasswordKey: "password"
+  postgresql:
+    enabled: false  
+  production: false
+  proxy: edge
+  replicaCount: 1
+  keycloakConfigCli:
+    enabled: true
+    command:
+    - java
+    - -jar
+    - /opt/bitnami/keycloak-config-cli/keycloak-config-cli-23.0.7.jar
+    image:
+      registry: docker.io
+      repository: bitnami/keycloak-config-cli
+      tag: 5.11.1-debian-12-r0
+      digest: ""
+      pullPolicy: IfNotPresent
+    annotations:
+      helm.sh/hook: "post-install,post-upgrade,post-rollback"
+      helm.sh/hook-delete-policy: "hook-succeeded,before-hook-creation"
+      helm.sh/hook-weight: "5"
+    ## @param keycloakConfigCli.command Command for running the container (set to default if not set). Use array form
+    ##
+    resources:
+      requests:
+        cpu: 250m
+        memory: 206Mi
+      limits:
+        cpu: 1000m
+        memory: 512Mi    
+    ## @param keycloakConfigCli.extraEnvVars Additional environment variables to set
+    ## Example:
+    ## extraEnvVars:
+    ##   - name: FOO
+    ##     value: "bar"
+    ##
+    ## @param keycloakConfigCli.nodeSelector Node labels for pod assignment
+    ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
+    ##
+    nodeSelector: {}
+    extraEnvVars:
+      - name: IMPORT_VARSUBSTITUTION_ENABLED
+        value: "true"
+      - name: CLIENTSECRET
+        value: "PouetPouet1!"
+      - name: CLIENTID
+        value: krakend-client
+      - name: REALM
+        value: krakend-realm
+    existingConfigmap: "keycloak-realm-config"
+    cleanupAfterFinished:
+      enabled: false
+      seconds: 600
+  networkPolicy:
+    ## @param networkPolicy.enabled Specifies whether a NetworkPolicy should be created
+    ##
+    enabled: false
