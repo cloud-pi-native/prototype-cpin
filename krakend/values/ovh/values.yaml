@@ -178,7 +178,6 @@ krakend:
               "modifier/lua-proxy": {{ template "lua_prescript" . }}
             }
           }
-          } 
   # -- (object) The service-level "extra_config" settings.
   # This will directly be translated to JSON and is added only
   # if you're not fully overriding the configuration via
