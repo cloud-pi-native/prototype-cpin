@@ -124,42 +124,12 @@ krakend:
       {{$host := .APIHost}}
       {{$JWKUrl := .JWKUrl}}
         {
-          "endpoint": "/api/quote1",
+          "endpoint": "/api/user/{id}",
           "method": "GET",
           "backend": [
             {
               "host": ["{{ $host }}"],
-              "url_pattern": "/quote1"
-            }
-          ],
-          "input_headers": {{ include "input_header.txt"}},
-          "extra_config": {
-            "auth/validator": {{ template "auth_validator" (dict "JWKUrl" $JWKUrl "Roles" "[\"admin\", \"moderator\", \"user\"]") }},
-            "modifier/lua-proxy": {{ template "lua_prescript" . }}
-          }
-        },
-        {
-          "endpoint": "/api/quote2",
-          "method": "GET",
-          "backend": [
-            {
-              "host": ["{{ $host }}"],
-              "url_pattern": "/quote2"
-            }
-          ],
-          "input_headers": {{ include "input_header.txt"}},
-          "extra_config": {
-            "auth/validator": {{ template "auth_validator" (dict "JWKUrl" $JWKUrl "Roles" "[\"admin\", \"moderator\", \"user\"]") }},
-            "modifier/lua-proxy": {{ template "lua_prescript" . }}
-          }
-        },
-        {
-          "endpoint": "/api/quote3",
-          "method": "GET",
-          "backend": [
-            {
-              "host": ["{{ $host }}"],
-              "url_pattern": "/quote3"
+              "url_pattern": "/user/{id}"
             }
           ],
           "input_headers": {{ include "input_header.txt"}},
@@ -179,12 +149,12 @@ krakend:
           ]
         },
         {
-            "endpoint": "/api/quote4",
+            "endpoint": "/api/modo/{id}",
             "method": "PUT",
             "backend": [
               {
                 "host": ["{{ $host }}"],
-                "url_pattern": "/quote4"
+                "url_pattern": "/modo/{id}"
               }
             ],
             "input_headers": {{ include "input_header.txt"}},
@@ -194,27 +164,12 @@ krakend:
             }
           },
           {
-            "endpoint": "/api/quote5",
-            "method": "PUT",
-            "backend": [
-              {
-                "host": ["{{ $host }}"],
-                "url_pattern": "/quote5"
-              }
-            ],
-            "input_headers": {{ include "input_header.txt"}},
-            "extra_config": {
-              "auth/validator": {{ template "auth_validator" (dict "JWKUrl" $JWKUrl "Roles" "[\"admin\", \"moderator\"]") }},
-              "modifier/lua-proxy": {{ template "lua_prescript" . }}
-            }
-          },
-          {
-            "endpoint": "/api/quote6",
+            "endpoint": "/api/admin/{id}",
             "method": "POST",
             "backend": [
               {
                 "host": ["{{ $host }}"],
-                "url_pattern": "/quote6"
+                "url_pattern": "/admin/{id}"
               }
             ],
             "input_headers": {{ include "input_header.txt"}},
@@ -222,25 +177,6 @@ krakend:
               "auth/validator": {{ template "auth_validator" (dict "JWKUrl" $JWKUrl "Roles" "[\"admin\"]") }},
               "modifier/lua-proxy": {{ template "lua_prescript" . }}
             }
-          },
-          {
-            "endpoint": "/api/quote7",
-            "method": "POST",
-            "backend": [
-              {
-                "host": ["{{ $host }}"],
-                "url_pattern": "/quote7"
-              }
-            ],
-            "input_headers": {{ include "input_header.txt"}},
-            "extra_config": {
-              "auth/validator": {{ template "auth_validator" (dict "JWKUrl" $JWKUrl "Roles" "[\"admin\"]") }},
-              "modifier/lua-proxy": {
-                "pre": "print('[GATEWAY] Request from username: ' .. r:headers('X-User') .. ' with path: ' .. r:path() .. ' and method: ' .. r:method())",
-                "live": false,
-                "allow_open_libs": true,
-                "skip_next": false
-              }
           }
           } 
   # -- (object) The service-level "extra_config" settings.

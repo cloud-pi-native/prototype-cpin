@@ -29,10 +29,14 @@ flowchart TB
     subgraph k8s_cluster[Kubernetes Cluster]
         direction TB
         ingress[HA proxy Ingress Controller]
-        krakend[Krakend - API Gateway]
-        node_api[API Node - Node.js]
-        keycloak[Keycloak - Gestion des utilisateurs]
-        postgres[(Postgres CNPG)] 
+        
+        subgraph namespace_ns[Namespace]
+            krakend[Krakend - API Gateway]
+            node_api[API Node - Node.js]
+            keycloak[Keycloak - Gestion des utilisateurs]
+            postgres[(Postgres CNPG)]
+        end
+        
         ingress -->|Transmet la demande utilisateur| krakend
         krakend -->|Transmet la demande| node_api 
         node_api -->|Envoie la réponse| krakend
@@ -87,6 +91,16 @@ Keycloak est déployé à l'aide du chart Helm Bitnami Keycloak [Voir la documen
 Le chart Helm de Keycloak est une dépendance, et la fonctionnalité keycloak-config-cli est utilisée pour importer un "realm" configuré dans une ConfigMap (répertoire `keycloak/templates/configmap.yaml`). Un exemple d'implémentation se trouve dans le fichier `values` de Keycloak, où les variables d'environnement (provenant de secrets Kubernetes) sont définies.
 
 ## PostgreSQL
+CloudNativePG est un opérateur Kubernetes pour la gestion du cycle de vie des clusters PostgreSQL. Ses fonctionnalités clés incluent :
+
+- High availability : Utilisation de la réplication en continu sur des zones différentes.
+- Basculement automatique et auto-réparation. (au sein du même cluster)
+- Sauvegarde et récupération : Sauvegarde continue et récupération à un instant donné. (Point in Time recovery)
+- Observabilité : Intégration avec Prometheus.
+- Pattern cloud-native : Configuration en yaml et intégrable dans une CI/CD.
+- Sécurité : Connexions TLS et audits logs.
+- Mécanisme de réplication distant (bascule manuelle possible entre deux région)
+  
 La base de données PostgreSQL est déployée à l'aide du chart CloudNativePG [Voir la documentation](https://github.com/cloudnative-pg/charts/tree/main/charts/cluster).\
 Le chart Helm de CloudNativePG est une dépendance, et il est utilisé par Keycloak pour le stockage des données utilisateurs. Afin de gérer le cycle de vie de la base de données indépendamment des autres services, elle est maintenue dans un chart distinct de Keycloak, ce qui permet de prévenir les erreurs et d'optimiser la réutilisation des charts Helm.
 
@@ -101,11 +115,13 @@ La [configuration flexible](https://www.krakend.io/docs/configuration/flexible-c
 Afin de gérer les secrets, le script [d'encryption](./encrypt.sh) permet de chiffrer ses SopsSecret avec Sops (cf: [docs](https://cloud-pi-native.fr/guide/secrets-management)).
 Le script viens rechercher les fichiers présents dans les dossiers et sous dossiers de ce repo et ayant l'extension `*.dec.yaml`
 Le script fonctionne aussi lorsque les .dec.yaml sont dans le .gitignore et ne chiffre pas des fichiers qui n'ont pas été modifié.
+// TODO: faire un script de decrypt 
+
 **Note importante** : \
 Pensez à mettre vos fichiers décodés dans votre `.gitignore`
 
-// TODO: faire un script de decrypt 
-
+## Informations annexes
+Les configurations de ressources (ram/cpu) sont données dans ce repo à titre indicatif. Il est **indispensable** d'effectuer des tests de charge de son application avant de la déployer en recette ou en production.
 ---
 
 ## Sources et Références :
