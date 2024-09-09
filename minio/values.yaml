@@ -25,8 +25,6 @@ minio:
     enabled: false
   auth:
     existingSecret: "minio-admin"
-    rootUserSecretKey: "user"
-    rootPasswordSecretKey: "password"
     useSecret: false
     forceNewKeys: false
   networkPolicy:
