@@ -19,6 +19,10 @@ global:
       adaptSecurityContext: auto
 minio:
   enabled: true
+  containerSecurityContext:
+    enabled: false
+  podSecurityContext:
+    enabled: false
   auth:
     existingSecret: "minio-admin"
     rootUserSecretKey: "user"
@@ -43,6 +47,10 @@ minio:
       memory: 500Mi
   provisioning:
     enabled: true
+    podSecurityContext:
+      enabled: false
+    containerSecurityContext:
+      enabled: false
     resources:
       requests:
         cpu: 250m
