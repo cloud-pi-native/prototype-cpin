@@ -39,10 +39,10 @@ minio:
   resources:
     requests:
       cpu: 250m
-      memory: 200Mi
+      memory: 500Mi
     limits:
       cpu: 1
-      memory: 500Mi
+      memory: 1024Mi
   provisioning:
     enabled: true
     podSecurityContext:
@@ -55,7 +55,7 @@ minio:
         memory: 100Mi
       limits:
         cpu: 500m
-        memory: 206Mi
+        memory: 500Mi
     policies:
       - name: custom-bucket-specific-policy
         statements:
