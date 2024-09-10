@@ -94,13 +94,17 @@ sequenceDiagram
 7. Poussez ce dépôt sur GitHub ou un autre service
 8. Modifiez le fichier `.env` présent dans le répertoire `scripts` avec vos informations. Le fichier est prérempli avec les informations de DSO PROD, pensez à mettre à jour le nom de votre projet ainsi que le nom de l'environnement.
 9. Lancez le script présent dans le répertoire `scripts`
-10. Poussez les fichiers générés par le script dans votre dépôt Git
-11. Créez un dépôt nommé `minio` dans la console en cochant la case dépôt d'infrastructure et en le faisant pointer vers le dépôt que vous avez créé à l'étape précédente.
-12. Créez un environnement avec le même nom que celui que vous avez spécifié dans le fichier `.env`
-13. Rendez-vous sur `ArgoCD` à partir de la `console`
-14. Modifiez l'application `minio` afin d'utiliser le bon fichier `values` et le bon chemin dans votre repo (cf. docs CPIN)
-15. Une fois que `minio` est déployé, effectuez les mêmes opérations sur la `console` et `ArgoCD` pour `postgres` (le dépôt doit s'appeler `postgres` dans la console)
-16. Une fois que `postgres` est installé, effectuez les mêmes opérations sur la console et ArgoCD pour l'`API node` (le dépôt doit s'appeler `api-node` dans la console)
+    ```bash
+    cd scripts
+    bash generate_script.sh
+    ```
+11. Poussez les fichiers générés par le script dans votre dépôt Git
+12. Créez un dépôt nommé `minio` dans la console en cochant la case dépôt d'infrastructure et en le faisant pointer vers le dépôt que vous avez créé à l'étape précédente.
+13. Créez un environnement avec le même nom que celui que vous avez spécifié dans le fichier `.env`
+14. Rendez-vous sur `ArgoCD` à partir de la `console`
+15. Modifiez l'application `minio` afin d'utiliser le bon fichier `values` et le bon chemin dans votre repo (cf. docs CPIN)
+16. Une fois que `minio` est déployé, effectuez les mêmes opérations sur la `console` et `ArgoCD` pour `postgres` (le dépôt doit s'appeler `postgres` dans la console)
+17. Une fois que `postgres` est installé, effectuez les mêmes opérations sur la console et ArgoCD pour l'`API node` (le dépôt doit s'appeler `api-node` dans la console)
 
 
 ## API Node.js
