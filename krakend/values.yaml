@@ -1,3 +1,8 @@
+environnement: &environnement demo
+labels:
+  env: *environnement
+
+
 # -- (int) Number of replicas to deploy
 replicaCount: 1
 
@@ -35,11 +40,19 @@ krakend:
   # The default is just the ones needed to enable flexible configuration.
   env: []
   # -- (string, optional) If set, this key will contain the full configuration of the krakend service
-  config: ""
+  config: |-
+    {
+      "version": 3,
+      {{ template "telemetry.tmpl" . }},
+      "endpoints": [
+        {{ template "endpoints.tmpl" .urls }}
+      ]
+    }
   # -- (string, optional) an external file relative path, will contain the full
   # configuration of the krakend service. useful if config file is generated
   # with flexible config https://www.krakend.io/docs/configuration/flexible-config/
   configFileSource: ""
+
   # -- (string, optional) an external file relative path, will contain the partial configuration files of the krakend service.
   partialsDirSource: ""
   # -- (string, optional) an external file relative path, will contain the setting configuration files of the krakend service.
@@ -50,79 +63,131 @@ krakend:
   # will be used to load several aspects of the configuration.
   # If you want to include expra partials, add or remove them here.
   partials:
-    input_headers.tmpl: |-
-      "input_headers": [
-        "Content-Type",
-        "ClientId"
-      ]
-    
-    rate_limit_backend.tmpl: |-
-      "qos/ratelimit/proxy": {
-        "max_rate": 0.5,
-        "capacity": 1
-      }
-    endpoints.tmpl: |-
+    input_header.txt: |-
       [
-        {
-          "endpoint": "/test",
-          "method": "GET",
-          "backend": [
-              {
-                  "method": "GET",
-                  "host": [],
-                  "url_pattern": "/__debug/roots",
-                  "encoding": "json",
-                  "deny": [
-                      "message"
-                  ]
-              }
-          ],
-          "extra_config": {
-              "proxy": {
-                  "static": {
-                      "data": {
-                          "collection": [
-                              {
-                                  "directories": [
-                                      "Graceland"
-                                  ]
-                              }
-                          ],
-                          "version": "deficient"
-                      },
-                      "strategy": "always"
-                  }
-              }
-          },
-          "output_encoding": "json"
-        }
+        "X-User",
+        "Authorization"
       ]
   # -- The default configuration has a settings files that
   # will be used to load several aspects of the configuration.
   settings:
-    service.json: |-
+    urls.json: |-
       {
-      	"environment": "PRODUCTION",
-      	"default_host": "http://localhost:8080",
-      	"timeout": "3s",
-      	"cache_ttl": "3s",
-      	"output_encoding": "json"
+          "APIHost": "http://mi-apimcanel-dev-kaamelott-infra-6293-api",
+          "JWKUrl": "http://mi-apimcanel-dev-keycloak-6293/realms/krakend-realm/protocol/openid-connect/certs"
       }
   # -- While default configuration does not take into use
   # templates; you may want to add your own templates here.
   # Note that you'd need to set a custom configuration file
   # to use them.
-  templates: {}
+  templates:
+    telemetry.tmpl: |-
+      "extra_config": {
+        "telemetry/opentelemetry": {
+          "service_name": "krakend_prometheus_service",
+          "metric_reporting_period": 1,
+          "exporters": {
+            "prometheus": [
+              {
+                "name": "local_prometheus",
+                "port": 9090,
+                "process_metrics": true,
+                "go_metrics": true
+              }
+            ]
+          }
+        }
+      }
+    endpoints.tmpl: |-
+      {{ define "auth_validator" }}
+      {
+        "alg": "RS256",
+        "jwk_url": "{{ .JWKUrl }}",
+        "disable_jwk_security": true,
+        "roles": {{ .Roles }},
+        "roles_key": "realm_access.roles",
+        "roles_key_is_nested": true,
+          "propagate_claims": [
+          ["preferred_username", "x-user"],
+          ["realm_access.role", "x-role"]
+        ]
+      }
+      {{ end }}
+      {{ define "lua_prescript" }}
+      {
+        "pre": "local r = request.load();print('[GATEWAY] Request from username: ' .. r:headers('X-User') .. ' with path: ' .. r:path() .. ' and method: ' .. r:method())",
+        "live": false,
+        "allow_open_libs": true,
+        "skip_next": false
+      }
+      {{ end }}
+      {{$host := .APIHost}}
+      {{$JWKUrl := .JWKUrl}}
+        {
+          "endpoint": "/api/user/{id}",
+          "method": "GET",
+          "backend": [
+            {
+              "host": ["{{ $host }}"],
+              "url_pattern": "/user/{id}"
+            }
+          ],
+          "input_headers": {{ include "input_header.txt"}},
+          "extra_config": {
+            "auth/validator": {{ template "auth_validator" (dict "JWKUrl" $JWKUrl "Roles" "[\"admin\", \"moderator\", \"user\"]") }},
+            "modifier/lua-proxy": {{ template "lua_prescript" . }}
+          }
+        },
+        {
+          "endpoint": "/api/public",
+          "method": "GET",
+          "backend": [
+            {
+              "host": ["{{ $host }}"],
+              "url_pattern": "/public"
+            }
+          ]
+        },
+        {
+            "endpoint": "/api/modo/{id}",
+            "method": "PUT",
+            "backend": [
+              {
+                "host": ["{{ $host }}"],
+                "url_pattern": "/modo/{id}"
+              }
+            ],
+            "input_headers": {{ include "input_header.txt"}},
+            "extra_config": {
+              "auth/validator": {{ template "auth_validator" (dict "JWKUrl" $JWKUrl "Roles" "[\"admin\", \"moderator\"]") }},
+              "modifier/lua-proxy": {{ template "lua_prescript" . }}
+            }
+          },
+          {
+            "endpoint": "/api/admin/{id}",
+            "method": "POST",
+            "backend": [
+              {
+                "host": ["{{ $host }}"],
+                "url_pattern": "/admin/{id}"
+              }
+            ],
+            "input_headers": {{ include "input_header.txt"}},
+            "extra_config": {
+              "auth/validator": {{ template "auth_validator" (dict "JWKUrl" $JWKUrl "Roles" "[\"admin\"]") }},
+              "modifier/lua-proxy": {{ template "lua_prescript" . }}
+            }
+          }
   # -- (object) The service-level "extra_config" settings.
   # This will directly be translated to JSON and is added only
   # if you're not fully overriding the configuration via
   # the `config` setting.
   # For more information, see https://www.krakend.io/docs/enterprise/configuration/
-  extraConfig:
-    router:
-      "@comment": "The health endpoint checks do not show in the logs"
-      logger_skip_paths:
-        - "/__health"
+  # extraConfig:
+  #   router:
+  #     "@comment": "The health endpoint checks do not show in the logs"
+  #     logger_skip_paths:
+  #       - "/__health"
 
 # -- (list) List of secrets containing the credentials to use for the image
 imagePullSecrets: []
@@ -155,7 +220,7 @@ podSecurityContext: {}
 securityContext:
   allowPrivilegeEscalation: false
   runAsNonRoot: true
-  runAsUser: 1000
+  runAsUser: null
   readOnlyRootFilesystem: true
   capabilities:
     drop:
@@ -187,7 +252,7 @@ service:
 # -- (object) The ingress settings to use for the krakend ingress
 ingress:
   # -- (bool) Specifies whether an ingress should be created
-  enabled: false
+  enabled: true
   # -- (string) The class to use for the ingress
   className: ""
   # -- (object) The annotations to use for the ingress
@@ -196,7 +261,7 @@ ingress:
     # kubernetes.io/tls-acme: "true"
   # -- (list) The list of hosts to use for the ingress
   hosts:
-    - host: chart-example.local
+    - host: apim-canel-krakend.apps.app1.numerique-interieur.com
       paths:
         - path: /
           pathType: ImplementationSpecific
@@ -209,7 +274,13 @@ ingress:
 lifecycle: {}
 
 # -- (object) The resources to use for the krakend pod
-resources: {}
+resources:
+  requests:
+    cpu: 500m
+    memory: 512Mi
+  limits:
+    cpu: 1000m
+    memory: 1024Mi
 
 # -- (object) The nodeSelector to use for the krakend pod
 nodeSelector: {}
@@ -255,7 +326,7 @@ podDisruptionBudget:
 # -- (object) The serviceMonitor configures a ServiceMonitor for your application
 serviceMonitor:
   # -- (bool) Set to true to create a default ServiceMonitor for your application
-  enabled: false
+  enabled: true
   # -- Annotations to add to ServiceMonitor
   annotations: {}
   # -- Interval for scrape metrics.

@@ -80,6 +80,29 @@ sequenceDiagram
 ```
 <div style="margin-top: 50px;">
 
+# Comment installer le prototype
+1. Se connecter à la [console](https://console.apps.dso.numerique-interieur.com) Cloud Pi Native
+2. Créer un projet
+3. Forquez le repo de l'API [ici](https://github.com/cloud-pi-native/prototype-cpin-node)
+4. Créer un dépôt nommé `api-node` dans la console, et le faire pointer sur votre fork
+5. Vérifiez sur le [GitLab DSO](https://gitlab.apps.dso.numerique-interieur.com) que vos pipelines de mirror et de build sont passés
+6. Clonez ce dépôt :
+    ```bash
+    git clone https://github.com/cloud-pi-native/prototype-cpin.git
+    cd prototype-cpin
+    ```
+7. Poussez ce dépôt sur GitHub ou un autre service
+8. Modifiez le fichier `.env` présent dans le répertoire `scripts` avec vos informations. Le fichier est prérempli avec les informations de DSO PROD, pensez à mettre à jour le nom de votre projet ainsi que le nom de l'environnement.
+9. Lancez le script présent dans le répertoire `scripts`
+10. Poussez les fichiers générés par le script dans votre dépôt Git
+11. Créez un dépôt nommé `minio` dans la console en cochant la case dépôt d'infrastructure et en le faisant pointer vers le dépôt que vous avez créé à l'étape précédente.
+12. Créez un environnement avec le même nom que celui que vous avez spécifié dans le fichier `.env`
+13. Rendez-vous sur `ArgoCD` à partir de la `console`
+14. Modifiez l'application `minio` afin d'utiliser le bon fichier `values` et le bon chemin dans votre repo (cf. docs CPIN)
+15. Une fois que `minio` est déployé, effectuez les mêmes opérations sur la `console` et `ArgoCD` pour `postgres` (le dépôt doit s'appeler `postgres` dans la console)
+16. Une fois que `postgres` est installé, effectuez les mêmes opérations sur la console et ArgoCD pour l'`API node` (le dépôt doit s'appeler `api-node` dans la console)
+
+
 ## API Node.js
 L'API Node.js expose plusieurs endpoints permettant d'effectuer des requêtes :
 - GET
